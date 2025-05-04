@@ -19,6 +19,7 @@
   "username": "Ali",
   "email": "ali@student.com",
   "password": "123456",
+  "confirmPassword": "123456",
   "role": "student",
   "department": "mearn"
 }
