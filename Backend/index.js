@@ -1,20 +1,23 @@
-import express from 'express'
-import path from 'path'
-import dotenv from 'dotenv'
-const app = express()
-const port = 3000
+import express from "express";
+import path from "path";
+import dotenv from "dotenv";
 
-import dbConnection from './dbConfig/db.js'
+import dbConnection from "./dbConfig/db.js";
+import authRoutes from "./routes/authRoutes.js";
 
-dotenv.config({path: 'config.env'})
+const app = express();
+
+app.use(express.json());
+dotenv.config({ path: "config.env" });
 
 dbConnection();
 
+app.use("/examApi", authRoutes);
+app.get("/test", (req, res) => {
+  res.send("Server working!");
+});
 
-app.get('/', (req, res) => {
-  res.send(' branch &&بسم الله توكلنا على الله')
-})
-
+const port = process.env.PORT;
 app.listen(port, () => {
-  console.log(`app listening on port ${port}`)
-})
+  console.log(`app listening on port ${port}`);
+});

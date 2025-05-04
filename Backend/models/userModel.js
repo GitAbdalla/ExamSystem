@@ -1,4 +1,5 @@
-import mongoose from ("mongoose");
+import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema(
   {
@@ -23,11 +24,33 @@ const userSchema = new mongoose.Schema(
     department: {
       type: String,
       enum: ["mearn", "dotnet", "python"],
-      required: () => {
+      required: function () {
         return (this.role = "student");
       },
     },
   },
   { timestamps: true }
 );
-export default mongoose.model('User', userSchema)
+
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+  this.password = await bcrypt.hash(this.password, 12);
+});
+
+userSchema.methods.correctPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+userSchema.methods.toJSON = function () {
+  const userObject = this.toObject();
+
+  userObject.id = userObject._id;
+  delete userObject._id;
+  delete userObject.password;
+  delete userObject.__v;
+
+  return userObject;
+};
+
+
+export default mongoose.model("User", userSchema);
