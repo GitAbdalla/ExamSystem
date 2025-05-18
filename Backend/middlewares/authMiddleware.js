@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import User from "../models/userModel";
+import User from "../models/userModel.js";
 
-export const protect = async (req, res) => {
+export const protect = async (req, res, next) => {
   let token;
   if (req.headers.authorization?.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
@@ -9,7 +9,7 @@ export const protect = async (req, res) => {
 
   if (!token) {
     return res.status(401).json({
-      message: "Not Authorized",
+      message: "You need to log in",
     });
   }
   try {

@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 import dbConnection from "./dbConfig/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import examRoutes from './routes/examRoutes.js'
 
 const app = express();
 
@@ -13,6 +14,9 @@ dotenv.config({ path: "config.env" });
 dbConnection();
 
 app.use("/examApi", authRoutes);
+app.use("/examApi",examRoutes )
+
+
 app.get("/test", (req, res) => {
   res.send("Server working!");
 });
