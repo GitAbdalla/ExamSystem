@@ -106,3 +106,27 @@ export const deleteExam = async (req, res) => {
     });
   }
 };
+
+export const getAllExams = async (req, res) => {
+  try {
+    const exams = await Exam.find();
+
+    if (!exams) {
+      return res.status(400).json({
+        message: "No Exams Availabe",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "Exams fetched successfully",
+      exams: exams,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Server error",
+      error: err.message,
+    });
+  }
+};
