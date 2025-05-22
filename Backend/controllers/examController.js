@@ -125,8 +125,57 @@ export const getAllExams = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       status: "error",
-      message: "Server error",
-      error: err.message,
+      message: "Server error while deleting exam",
+      error: error.message,
+    });
+  }
+};
+
+export const getExamById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const exam = await Exam.findById(id).populate("createdBy", "username");
+
+    if (!exam) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Exam not found",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      exam: exam,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Error fetching exam details",
+      error: error.message,
+    });
+  }
+};
+
+export const getAvailableExams = async (req, res) => {
+  try {
+    const user = req.user;
+    const now = new Date();
+
+    const exams = await Exam.find({
+      department: user.department,
+      startTime: { $gt: now },
+    });
+
+    res.status(200).json({
+      status: "success",
+      count: exams.length,
+      exams,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Could not fetch available exams",
+      error: error.message,
     });
   }
 };
