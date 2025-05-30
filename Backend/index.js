@@ -6,6 +6,7 @@ import dbConnection from "./dbConfig/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import examRoutes from './routes/examRoutes.js';
 import questionRoutes from './routes/questionRoutes.js';
+import submissionRoutes from './routes/submissionRoutes.js'
 
 const app = express();
 
@@ -17,6 +18,7 @@ dbConnection();
 app.use("/examApi", authRoutes);
 app.use("/examApi",examRoutes );
 app.use("/examApi",questionRoutes );
+app.use("/examApi",submissionRoutes );
 
 
 app.get("/test", (req, res) => {

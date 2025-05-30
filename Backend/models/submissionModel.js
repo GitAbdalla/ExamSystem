@@ -21,6 +21,9 @@ const submissionSchema = new mongoose.Schema({
   score: {
     type: Number,
   },
+  percentage: {
+  type: Number,
+},
   answers: [
     {
       questionId: {
