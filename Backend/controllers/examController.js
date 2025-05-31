@@ -1,5 +1,6 @@
 import Exam from "../models/examModel.js";
-
+import User from "../models/userModel.js";
+import Notification from "../models/notificationModel.js";
 export const createExam = async (req, res) => {
   try {
     const {
@@ -27,6 +28,23 @@ export const createExam = async (req, res) => {
       durationMinutes,
       createdBy: req.user._id,
     });
+
+    const studentsInDept = await User.find({
+      role: "student",
+      department: department,
+    });
+
+    const notifications = studentsInDept.map((student) => ({
+      recipient: student._id,
+      message: `📢 New exam "${title}" has been created for your department (${department})`,
+      type: "exam_created",
+      link: `/exams/${exam._id}`,
+      createdAt: new Date(),
+      read: false,
+    }));
+
+    await Notification.insertMany(notifications);
+
     res.status(201).json({
       status: "success",
       message: "Exam created successfully",

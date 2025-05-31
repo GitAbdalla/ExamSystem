@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import examRoutes from './routes/examRoutes.js';
 import questionRoutes from './routes/questionRoutes.js';
 import submissionRoutes from './routes/submissionRoutes.js'
+import notificationRoutes from './routes/notificationRoutes.js'
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/examApi", authRoutes);
 app.use("/examApi",examRoutes );
 app.use("/examApi",questionRoutes );
 app.use("/examApi",submissionRoutes );
+app.use("/examApi",notificationRoutes );
 
 
 app.get("/test", (req, res) => {

@@ -1,6 +1,8 @@
 import Submission from "../models/submissionModel.js";
 import Exam from "../models/examModel.js";
 import Question from "../models/questionModel.js";
+import Notification from "../models/notificationModel.js";
+import User from "../models/userModel.js"
 
 export const startSubmission = async (req, res) => {
   try {
@@ -75,6 +77,18 @@ export const submitExam = async (req, res) => {
     submission.submittedAt = new Date();
 
     await submission.save();
+
+    const exam = await Exam.findById(examId);
+    const adminId = exam.createdBy;
+
+    const student = await User.findById(studentId);
+
+    await Notification.create({
+      recipient: adminId,
+      message: `📝 ${student.username} submitted "${
+        exam.title
+      }" with a score of ${percentage.toFixed(2)}%.`,
+    });
 
     res.status(200).json({
       message: "Submission successful",
@@ -165,28 +179,29 @@ export const getMySubmissions = async (req, res) => {
   }
 };
 
-
-export const getExamLeaderBoard = async(req,res)=>{
+export const getExamLeaderBoard = async (req, res) => {
   try {
     const examId = req.params.id;
 
-    const submission = await Submission.find({examId})
-    .populate("studentId", "username").sort({percentage: -1}).limit(10);
+    const submission = await Submission.find({ examId })
+      .populate("studentId", "username")
+      .sort({ percentage: -1 })
+      .limit(10);
 
-    const leaderboard = submission.map((sub,index)=>({
+    const leaderboard = submission.map((sub, index) => ({
       rank: index + 1,
       studentName: sub.studentId?.username || "Unknown",
-      score:sub.score,
-      percentage: sub.percentage
-    }))
+      score: sub.score,
+      percentage: sub.percentage,
+    }));
 
     res.status(200).json({
-      status:"success",
+      status: "success",
       examId,
       top: leaderboard.length,
-      leaderboard
-    })
+      leaderboard,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
