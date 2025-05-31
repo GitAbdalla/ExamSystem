@@ -164,3 +164,29 @@ export const getMySubmissions = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export const getExamLeaderBoard = async(req,res)=>{
+  try {
+    const examId = req.params.id;
+
+    const submission = await Submission.find({examId})
+    .populate("studentId", "username").sort({percentage: -1}).limit(10);
+
+    const leaderboard = submission.map((sub,index)=>({
+      rank: index + 1,
+      studentName: sub.studentId?.username || "Unknown",
+      score:sub.score,
+      percentage: sub.percentage
+    }))
+
+    res.status(200).json({
+      status:"success",
+      examId,
+      top: leaderboard.length,
+      leaderboard
+    })
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}

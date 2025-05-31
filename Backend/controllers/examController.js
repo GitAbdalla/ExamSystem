@@ -113,7 +113,7 @@ export const getAllExams = async (req, res) => {
 
     if (!exams) {
       return res.status(400).json({
-        message: "No Exams Availabe",
+        message: "No Exams Available",
       });
     }
 
