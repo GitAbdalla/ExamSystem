@@ -2,7 +2,9 @@ import Submission from "../models/submissionModel.js";
 import Exam from "../models/examModel.js";
 import Question from "../models/questionModel.js";
 import Notification from "../models/notificationModel.js";
-import User from "../models/userModel.js"
+import User from "../models/userModel.js";
+import { getIO } from "../config/socket.js";
+import { onlineUsers } from "../utils/onlineUsers.js";
 
 export const startSubmission = async (req, res) => {
   try {
@@ -78,17 +80,25 @@ export const submitExam = async (req, res) => {
 
     await submission.save();
 
-    const exam = await Exam.findById(examId);
-    const adminId = exam.createdBy;
+    const io = getIO();
+
+    const exam = await Exam.findById(examId).populate("createdBy");
+    const adminId = exam.createdBy._id.toString();
 
     const student = await User.findById(studentId);
+    const message = `📝 ${student.username} submitted "${
+      exam.title
+    }" with ${submission.percentage.toFixed(2)}%`;
 
     await Notification.create({
       recipient: adminId,
-      message: `📝 ${student.username} submitted "${
-        exam.title
-      }" with a score of ${percentage.toFixed(2)}%.`,
+      message,
     });
+
+    const socketId = onlineUsers.get(adminId.toString());
+    if (socketId) {
+      io.to(socketId).emit("notification", { message, type: "submission" });
+    }
 
     res.status(200).json({
       message: "Submission successful",

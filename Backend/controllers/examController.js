@@ -1,6 +1,9 @@
 import Exam from "../models/examModel.js";
 import User from "../models/userModel.js";
 import Notification from "../models/notificationModel.js";
+import { getIO } from "../config/socket.js";
+import { onlineUsers } from "../utils/onlineUsers.js";
+
 export const createExam = async (req, res) => {
   try {
     const {
@@ -29,19 +32,28 @@ export const createExam = async (req, res) => {
       createdBy: req.user._id,
     });
 
-    const studentsInDept = await User.find({
+    const io = getIO();
+
+    const students = await User.find({
       role: "student",
-      department: department,
+      department,
     });
 
-    const notifications = studentsInDept.map((student) => ({
-      recipient: student._id,
-      message: `📢 New exam "${title}" has been created for your department (${department})`,
-      type: "exam_created",
-      link: `/exams/${exam._id}`,
-      createdAt: new Date(),
-      read: false,
-    }));
+    const notifications = [];
+
+    students.forEach((student) => {
+      const message = `📘 New exam "${title}" created for your department (${department})`;
+
+      notifications.push({
+        recipient: student._id,
+        message,
+      });
+
+      const socketId = onlineUsers.get(student._id.toString());
+      if (socketId) {
+        io.to(socketId).emit("notification", { message, type: "exam" });
+      }
+    });
 
     await Notification.insertMany(notifications);
 
