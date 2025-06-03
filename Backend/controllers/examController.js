@@ -200,6 +200,7 @@ export const getAvailableExams = async (req, res) => {
       status: "success",
       count: exams.length,
       exams,
+      
     });
   } catch (error) {
     res.status(500).json({
