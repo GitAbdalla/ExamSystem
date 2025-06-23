@@ -1,69 +1,79 @@
-## 📌 Signup Route
+# 📝 Online Exam System (Backend)
 
-**Endpoint:** `POST http://localhost:4000/examApi/signup`
+A full-featured backend for an online exam system built with **Node.js**, **Express**, and **MongoDB**. It supports user authentication, exam creation and participation, real-time notifications via Socket.IO, role-based access control, and more.
 
-### 🔐 Request Body
+## 🚀 Features
 
-| Field        | Type     | Required | Description                              |
-|--------------|----------|----------|------------------------------------------|
-| `username`   | `String` | ✅ Yes    | User's full name                         |
-| `email`      | `String` | ✅ Yes    | Unique email address                     |
-| `password`   | `String` | ✅ Yes    | Minimum 6 characters                     |
-| `confirmPassword`                    |
-| `role`       | `String` | ❌ No      | Default: "student" (or "admin"/"teacher")|
-| `department` | `String` | Conditional | Required if role=student (mearn/dotnet/python) |
+### 👥 Authentication
+- User registration & login
+- Roles: `admin`, `student`
+- Department assignment (e.g., `mearn`, `dotnet`, `python`)
 
-#### Example Request:
-```json
-{
-  "username": "Ali",
-  "email": "ali@student.com",
-  "password": "123456",
-  "confirmPassword": "123456",
-  "role": "student",
-  "department": "mearn"
-}
-```
-```json
-{
-  "status": "success",
-  "message": "Signed up successfully",
-  "user": {
-    "username": "Ali",
-    "email": "ali@student.com",
-    "role": "student",
-    "department": "mearn",
-    "createdAt": "2025-05-04T18:20:43.234Z",
-    "updatedAt": "2025-05-04T18:20:43.234Z",
-    "id": "6817affb4591fe26583bf549"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTdhZmZiNDU5MWZlMjY1ODNiZjU0OSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzQ2MzgyODQzLCJleHAiOjE3NDY5ODc2NDN9.ZNvXYu0IPoOaS7SQfk4CvjrCiRr652rtjlzPcrHHc7c"
-}
-```
+### 🧪 Exams Module
+- Admins/teachers can:
+  - Create, update, delete exams
+  - Set department, schedule, and duration
+  - Notify students of new exams in their department
+- Students can:
+  - View available exams for their department
 
-## 🔑 Login Route
+### ❓ Questions Module
+- Admins can:
+  - Create, update, delete questions linked to exams
+- Students:
+  - Retrieve exam questions (without correct answers)
 
-**Endpoint**: `POST http://localhost:4000/examApi/login`
+### ✅ Submissions
+- Students can:
+  - Start and submit exams
+  - Submit answers, get auto-scored with percentage
+- Admins can:
+  - View all submissions per exam
+- Students:
+  - View personal submission history
 
-#### Request Body
-```json
-{
-  "email": "ali@student.com",
-  "password": "123456"
-}
-```
-#### Example Response
-```json
-{
-  "status": "success",
-  "message": "Logged in successfully",
-  "user": {
-    "username": "Ali",
-    "email": "ali@student.com",
-    "role": "student",
-    "department": "mearn",
-    "id": "6817affb4591fe26583bf549"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTdhZmZiNDU5MWZlMjY1ODNiZjU0OSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzQ2MzgyODQzLCJleHAiOjE3NDY5ODc2NDN9.ZNvXYu0IPoOaS7SQfk4CvjrCiRr652rtjlzPcrHHc7c"
-}
-```
+### 🔔 Notifications
+- Sent to:
+  - All students in a department when a new exam is created
+  - The exam creator when a student submits
+- Real-time support using **Socket.IO**
+
+### 📦 Validation Layer
+- Express-validator used for:
+  - Signup/Login
+  - Exam creation/update
+  - More coming soon...
+
+---
+
+## ⚙️ Tech Stack
+
+- **Node.js**
+- **Express**
+- **MongoDB + Mongoose**
+- **Socket.IO** (Real-time notifications)
+- **JWT** for Auth
+- **Express-validator**
+- **RESTful API structure**
+
+---
+
+## 📦 Getting Started
+
+### 1. Clone the Repo
+
+```bash
+git clone https://github.com/your-username/online-exam-system-backend.git
+cd online-exam-system-backend
+
+npm install
+
+### 3. Set Environment Variables
+
+Create a `config.env` file in the root directory and add your environment variables:
+
+```env
+PORT=4000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRE=30d
